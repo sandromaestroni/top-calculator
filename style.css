@@ -4,6 +4,7 @@
 
 body {
     display: flex;
+    height: 80vh;
     align-items: center;
     justify-content: center;
     font-family: monospace;
@@ -108,4 +109,80 @@ button:active {
     background-color: rgb(214, 0, 0);
     font-size: 20px;
     color: whitesmoke;
+}
+
+@media only screen and (max-width: 450px) {
+    body {
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;  
+        font-family: monospace;
+    }
+    .calculator {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 90%;
+        gap: 20px;
+        background-color: var(--calc-color);
+        padding: 25px 0 25px 0;
+        border-radius: 10px;
+    }
+    
+    .display {
+        display: flex;
+        justify-content: flex-end;
+        align-items: flex-end;
+        font-size: 27px;
+        height: 50px;
+        width: 180px;
+        padding-left: 10px;
+        padding-right: 10px;
+        background-color: #b0beba;
+        border-radius: 5px;
+    }
+
+    .buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+    
+    .numbers {
+        width: 57.5%;
+        display: grid;
+        gap: 10px;
+        grid-template-columns: repeat(3,60px);
+        order: 2;
+    }
+    
+    .operands {
+        width: 37.5%;
+        display: grid;
+        gap: 10px;
+        grid-template-columns: repeat(3,60px);
+        
+    }
+
+    .equal {
+        order: 10;
+    }
+    .add {
+        order: 1;
+    }
+    .subtr {
+        order: 2;
+    }
+    .multiply {
+        order: 3;
+    }
+    .divide {
+        order: 4;
+    }
+    .percent {
+        order: 6;
+    }
+    .ce {
+        order: 3;
+    }
 }
