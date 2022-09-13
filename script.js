@@ -66,10 +66,12 @@ class Calculator {
     evaluate() {
         let result = this.operate();
         this.display(result);
+        this.op = '';
         this.firstOperand = `${result}`;
         this.secondOperand = '';
         this.logging = 'firstOperand';
         this.overrideA = true;
+        this.allowDecimal = true;
     }
     operation(str) {
         this.op = str;
@@ -104,9 +106,6 @@ class Calculator {
     }
     equals() {
         this.evaluate(this.firstOperand, this.secondOperand);
-        this.op = '';
-        this.overrideA = true;
-        this.allowDecimal = true;
     }
 }
 
