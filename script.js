@@ -20,7 +20,7 @@ class Calculator {
         this.firstOperand = this.secondOperand = this.op = '';
         this.logging = 'firstOperand';
         this.overrideA = false;
-        this.allowDecimal = false;
+        this.allowDecimal = true;
         this.display('0');
     }
     operate() {
@@ -28,26 +28,26 @@ class Calculator {
         const y = Number(this.secondOperand);
         switch (this.op) {
             case 'add':
-                return `${x+y}`;
+                return `${x + y}`;
             case 'subtract':
-                return `${x-y}`;
+                return `${x - y}`;
             case 'multiply':
-                return `${x*y}`;
+                return `${x * y}`;
             case 'divide':
                 if (y === 0) return 'Error';
-                return `${(x/y).toFixed(3)}`;
+                return `${(x / y).toFixed(3)}`;
             case 'percent':
                 if (y === 0) {
-                    return `${x/100}`;
+                    return `${x / 100}`;
                 }
-                return this.operate('multiply', x / 100, y);
+                return `${(x / 100) * y}`;
             default:
                 return `${x}`;
         }
     }
     logNumber(entry) {
         if (this.logging === "firstOperand") {
-            if (this.overrideA || this.firstOperand == 0) {
+            if (this.overrideA || (this.firstOperand == 0 && this.firstOperand !== '0.')) {
                 this.firstOperand = `${entry}`;
                 this.overrideA = false;
             } else {
@@ -83,24 +83,33 @@ class Calculator {
     dot() {
         if (this.allowDecimal) {
             if (this.logging === 'firstOperand') {
-                this.firstOperand += '.';
+                if (this.overrideA || this.firstOperand == 0) {
+                    this.firstOperand = '0.';
+                    this.overrideA = false;
+                } else {
+                    this.firstOperand += '.';
+                }
                 this.display(this.firstOperand);
             } else {
-                this.secondOperand += '.';
+                if (this.overrideA || this.secondOperand == 0) {
+                    this.secondOperand = '0.';
+                    this.overrideA = false;
+                } else {
+                    this.secondOperand += '.';
+                }
                 this.display(this.secondOperand);
             }
             this.allowDecimal = false;
-        }
+        }  
     }
     equals() {
-        this.evaluate(this.firstOperand,this.secondOperand);
+        this.evaluate(this.firstOperand, this.secondOperand);
         this.op = '';
         this.overrideA = true;
         this.allowDecimal = true;
     }
-    
-
 }
+
 
 const calc = new Calculator();
 
@@ -127,22 +136,22 @@ const dotBtn = document.querySelector('.dot');
 ceBtn.addEventListener('click', () => {
     calc.clear();
 })
-addBtn.addEventListener('click',() => {
+addBtn.addEventListener('click', () => {
     calc.operation('add');
 })
-subtrBtn.addEventListener('click',() => {
+subtrBtn.addEventListener('click', () => {
     calc.operation('subtract');
 })
-multiplyBtn.addEventListener('click',() => {
+multiplyBtn.addEventListener('click', () => {
     calc.operation('multiply');
 })
-divideBtn.addEventListener('click',() => {
+divideBtn.addEventListener('click', () => {
     calc.operation('divide');
 })
-percentBtn.addEventListener('click',() => {
+percentBtn.addEventListener('click', () => {
     calc.operation('percent');
 })
-equalBtn.addEventListener('click',() => {
+equalBtn.addEventListener('click', () => {
     calc.equals();
 })
 dotBtn.addEventListener('click', () => {
