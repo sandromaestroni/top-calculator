@@ -1,102 +1,121 @@
-function toSpelled(x) {
-    let nums = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine'];
-    return nums[x];
-}
-
-function isZero(s) {
-    return (s === '0');
-}
-
-function add(x, y) {
-    return x + y;
-}
-
-function subtract(x, y) {
-    return x - y;
-}
-
-function multiply(x, y) {
-    return x * y;
-}
-
-function divide(x, y) {
-    return x / y;
-}
-
-function operate(op, x, y) {
-    switch (op) {
-        case 'add':
-            return add(x, y);
-        case 'subtract':
-            return subtract(x, y);
-        case 'multiply':
-            return multiply(x, y);
-        case 'divide':
-            return divide(x, y);
-        case 'percent':
-            if (y === 0) {
-                return x/100;
+class Calculator {
+    constructor() {
+        this.logging = 'firstOperand';
+        this.op = '';
+        this.firstOperand = '';
+        this.secondOperand = '';
+        this.allowDecimal = true;
+        this.overrideA = false;
+    }
+    display(str) {
+        const displayedText = document.querySelector('.display');
+        if (str.length < 12) {
+            displayedText.textContent = str;
+        } else {
+            // Scientific notation future maybe
+            displayedText.textContent = 'Error';
+        }
+    }
+    clear() {
+        this.firstOperand = this.secondOperand = this.op = '';
+        this.logging = 'firstOperand';
+        this.overrideA = false;
+        this.allowDecimal = false;
+        this.display('0');
+    }
+    operate() {
+        const x = Number(this.firstOperand);
+        const y = Number(this.secondOperand);
+        switch (this.op) {
+            case 'add':
+                return `${x+y}`;
+            case 'subtract':
+                return `${x-y}`;
+            case 'multiply':
+                return `${x*y}`;
+            case 'divide':
+                if (y === 0) return 'Error';
+                return `${(x/y).toFixed(3)}`;
+            case 'percent':
+                if (y === 0) {
+                    return `${x/100}`;
+                }
+                return this.operate('multiply', x / 100, y);
+            default:
+                return `${x}`;
+        }
+    }
+    logNumber(entry) {
+        if (this.logging === "firstOperand") {
+            if (this.overrideA || this.firstOperand == 0) {
+                this.firstOperand = `${entry}`;
+                this.overrideA = false;
+            } else {
+                this.firstOperand += `${entry}`;
             }
-            return operate('multiply', x / 100, y);
-        default:
-            return x;
-    }
-}
-
-function logNumber(entry) {
-    if (logging === "a") {
-        if (overrideA || isZero(a)) {
-            a = `${entry}`;
-            overrideA = false;
-        } else {
-            a += entry;
+            this.display(this.firstOperand);
+        } else if (this.logging === "secondOperand") {
+            if (this.secondOperand == 0) {
+                this.secondOperand = `${entry}`;
+            } else {
+                this.secondOperand += `${entry}`;
+            }
+            this.display(this.secondOperand);
         }
-        displayedText.textContent = a;
-    } else if (logging === "b") {
-        if (isZero(b)) {
-            b = entry;
-        } else {
-            b += entry;
-        }
-        displayedText.textContent = b;
     }
+    evaluate() {
+        let result = this.operate();
+        this.display(result);
+        this.firstOperand = `${result}`;
+        this.secondOperand = '';
+        this.logging = 'firstOperand';
+        this.overrideA = true;
+    }
+    operation(str) {
+        this.op = str;
+        this.logging = 'secondOperand';
+        this.allowDecimal = true;
+        if (this.firstOperand !== '' && this.secondOperand !== '') {
+            this.evaluate(this.firstOperand, this.secondOperand);
+            this.logging = 'secondOperand';
+        }
+    }
+    dot() {
+        if (this.allowDecimal) {
+            if (this.logging === 'firstOperand') {
+                this.firstOperand += '.';
+                this.display(this.firstOperand);
+            } else {
+                this.secondOperand += '.';
+                this.display(this.secondOperand);
+            }
+            this.allowDecimal = false;
+        }
+    }
+    equals() {
+        this.evaluate(this.firstOperand,this.secondOperand);
+        this.op = '';
+        this.overrideA = true;
+        this.allowDecimal = false;
+    }
+    
+
 }
 
-function evaluate(x, y) {
-    let result = operate(op, Number(x), Number(y));
-    displayedText.textContent = `${result}`;
-    a = `${result}`;
-    b = '';
-    logging = 'a';
-    overrideA = true;
-}
+const calc = new Calculator();
 
-let logging = 'a';
-let op = '';
-let a = '';
-let b = '';
-let allowDecimal = false;
-let overrideA = false;
-
+// Event listeners for number buttons
 for (let i = 0; i < 10; i++) {
-    const spelled = toSpelled(i);
+    let nums = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine'];
+    const spelled = nums[i];
     const elm = document.querySelector(`.${spelled}`);
     elm.addEventListener('click', () => {
-        logNumber(i);
+        calc.logNumber(i);
     });
 }
 
-const displayedText = document.querySelector('.display');
-
-const ce = document.querySelector('.ce');
-ce.addEventListener('click', function () {
-    a = b = op = '';
-    logging = 'a';
-    overrideA = false;
-    allowDecimal = false;
-    displayedText.textContent = '0';
-})
-
+// Event listeners for operation buttons
+const ceBtn = document.querySelector('.ce');
 const addBtn = document.querySelector('.add');
 const subtrBtn = document.querySelector('.subtr');
 const multiplyBtn = document.querySelector('.multiply');
@@ -105,67 +124,27 @@ const percentBtn = document.querySelector('.percent');
 const equalBtn = document.querySelector('.equal');
 const dotBtn = document.querySelector('.dot');
 
-addBtn.addEventListener('click', () => {
-    op = 'add';
-    logging = 'b';
-    allowDecimal = false;
-    if (a != '' && b != '') {
-        evaluate(a, b);
-        logging = 'b';
-    }
-});
-subtrBtn.addEventListener('click', () => {
-    op = 'subtract';
-    logging = 'b';
-    allowDecimal = false;
-    if (a != '' && b != '') {
-        evaluate(a, b);
-        logging = 'b';
-    }
-});
-multiplyBtn.addEventListener('click', () => {
-    op = 'multiply';
-    logging = 'b';
-    allowDecimal = false;
-    if (a != '' && b != '') {
-        evaluate(a, b);
-        logging = 'b';
-    }
-});
-divideBtn.addEventListener('click', () => {
-    op = 'divide';
-    logging = 'b';
-    allowDecimal = false;
-    if (a != '' && b != '') {
-        evaluate(a, b);
-        logging = 'b';
-    }
-});
-percentBtn.addEventListener('click', () => {
-    op = 'percent';
-    logging = 'b';
-    allowDecimal = false;
-    if (a != '' && b != '') {
-        evaluate(a, b);
-        logging = 'b';
-    }
+ceBtn.addEventListener('click', () => {
+    calc.clear();
 })
-equalBtn.addEventListener('click', () => {
-    evaluate(a, b);
-    op = '';
-    overrideA = true;
-    allowDecimal = false;
+addBtn.addEventListener('click',() => {
+    calc.operation('add');
+})
+subtrBtn.addEventListener('click',() => {
+    calc.operation('subtract');
+})
+multiplyBtn.addEventListener('click',() => {
+    calc.operation('multiply');
+})
+divideBtn.addEventListener('click',() => {
+    calc.operation('divide');
+})
+percentBtn.addEventListener('click',() => {
+    calc.operation('percent');
+})
+equalBtn.addEventListener('click',() => {
+    calc.equals();
 })
 dotBtn.addEventListener('click', () => {
-    if (!allowDecimal) {
-        allowDecimal = true;
-        if (logging === 'a') {
-            a += '.';
-        } else {
-            b += '.';
-        }
-    }
+    calc.dot();
 })
-
-
-
