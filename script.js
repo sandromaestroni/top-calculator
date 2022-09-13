@@ -96,7 +96,7 @@ class Calculator {
         this.evaluate(this.firstOperand,this.secondOperand);
         this.op = '';
         this.overrideA = true;
-        this.allowDecimal = false;
+        this.allowDecimal = true;
     }
     
 
